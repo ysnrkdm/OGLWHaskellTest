@@ -16,6 +16,8 @@
 		8B6C6E831AA30C0E009EF356 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8B6C6E821AA30C0D009EF356 /* Images.xcassets */; };
 		8B6C6E861AA30C0E009EF356 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B6C6E841AA30C0E009EF356 /* LaunchScreen.xib */; };
 		8B6C6E921AA30C0E009EF356 /* OGLWHaskellTestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6C6E911AA30C0E009EF356 /* OGLWHaskellTestTests.m */; };
+		8B6C6E9C1AA30E68009EF356 /* HaskelliOS.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8B6C6E9B1AA30E68009EF356 /* HaskelliOS.xcconfig */; };
+		8B6C6E9F1AA31A37009EF356 /* MatrixHelper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B6C6E9E1AA31A37009EF356 /* MatrixHelper.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +46,9 @@
 		8B6C6E8B1AA30C0E009EF356 /* OGLWHaskellTestTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OGLWHaskellTestTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B6C6E901AA30C0E009EF356 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8B6C6E911AA30C0E009EF356 /* OGLWHaskellTestTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OGLWHaskellTestTests.m; sourceTree = "<group>"; };
+		8B6C6E9B1AA30E68009EF356 /* HaskelliOS.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = HaskelliOS.xcconfig; sourceTree = "<group>"; };
+		8B6C6E9D1AA31A37009EF356 /* Main_stub.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Main_stub.h; sourceTree = "<group>"; };
+		8B6C6E9E1AA31A37009EF356 /* MatrixHelper.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = MatrixHelper.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B6C6E9F1AA31A37009EF356 /* MatrixHelper.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,6 +91,9 @@
 		8B6C6E701AA30C0D009EF356 /* OGLWHaskellTest */ = {
 			isa = PBXGroup;
 			children = (
+				8B6C6E9B1AA30E68009EF356 /* HaskelliOS.xcconfig */,
+				8B6C6E9D1AA31A37009EF356 /* Main_stub.h */,
+				8B6C6E9E1AA31A37009EF356 /* MatrixHelper.a */,
 				8B6C6E751AA30C0D009EF356 /* AppDelegate.h */,
 				8B6C6E761AA30C0D009EF356 /* AppDelegate.m */,
 				8B6C6E781AA30C0D009EF356 /* Shader.fsh */,
@@ -208,6 +217,7 @@
 				8B6C6E861AA30C0E009EF356 /* LaunchScreen.xib in Resources */,
 				8B6C6E811AA30C0D009EF356 /* Main.storyboard in Resources */,
 				8B6C6E831AA30C0E009EF356 /* Images.xcassets in Resources */,
+				8B6C6E9C1AA30E68009EF356 /* HaskelliOS.xcconfig in Resources */,
 				8B6C6E7B1AA30C0D009EF356 /* Shader.vsh in Resources */,
 				8B6C6E791AA30C0D009EF356 /* Shader.fsh in Resources */,
 			);
@@ -273,6 +283,7 @@
 /* Begin XCBuildConfiguration section */
 		8B6C6E931AA30C0E009EF356 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8B6C6E9B1AA30E68009EF356 /* HaskelliOS.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -307,13 +318,14 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
 		};
 		8B6C6E941AA30C0E009EF356 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8B6C6E9B1AA30E68009EF356 /* HaskelliOS.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -353,6 +365,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = OGLWHaskellTest/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/OGLWHaskellTest",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -363,6 +379,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = OGLWHaskellTest/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/OGLWHaskellTest",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

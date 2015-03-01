@@ -1,0 +1,16 @@
+name:              OGLTestHaskell
+version:           1.0
+Build-Type:        Simple
+cabal-version:     >= 1.2
+
+executable FB
+  main-is:         Main.hs
+  hs-source-dirs:  src
+  build-depends:   base
+
+Test-Suite Test
+  type:       exitcode-stdio-1.0
+  main-is:    Main.hs
+  hs-source-dirs:  src/test,src
+  build-depends:    base,HUnit,test-framework,test-framework-hunit,matrix,vector
+  ghc-options:     -Wall -O2
