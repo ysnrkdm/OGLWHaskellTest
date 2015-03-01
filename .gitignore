@@ -27,6 +27,12 @@ DerivedData
 
 # Haskell generated binaries
 *.a
+dist
+
+# Haskell files
+.cabal-sandbox
+.idea
+cabal.sandbox.config
 
 # Others
 *.swp
