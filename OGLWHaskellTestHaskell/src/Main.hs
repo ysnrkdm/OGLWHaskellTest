@@ -16,10 +16,14 @@ import qualified Data.Vector.Storable as VS
 import qualified MatrixHelper as MH
 import qualified LoadShaders as LS
 
-foreign import ccall safe "c_main" c_main :: FunPtr (Double -> Double -> Double -> IO ()) -> IO ()
-foreign import ccall "wrapper" mkDrawFrame :: (Double -> Double -> Double -> IO ()) -> IO (FunPtr ((Double -> Double -> Double -> IO ())))
+foreign import ccall safe "c_main" c_main :: FunPtr (Double -> Double -> Double -> Double -> Double -> Double -> Double -> IO ()) -> IO ()
+foreign import ccall "wrapper" mkDrawFrame :: (Double -> Double -> Double -> Double -> Double -> Double -> Double -> IO ())
+                                           -> IO (FunPtr ((Double -> Double -> Double -> Double -> Double -> Double -> Double -> IO ())))
 foreign import ccall safe "c_pathForResource" c_pathForResource :: CString -> CString -> IO CString
 foreign export ccall loadShaders :: IO()
+foreign export ccall touchesBegan :: Double -> Double -> IO ()
+foreign export ccall touchesMoved :: Double -> Double -> Double -> Double -> IO ()
+foreign export ccall touchesEnded :: Double -> Double -> Double -> Double -> IO ()
 
 createVBO :: [GLfloat] -> IO BufferObject
 createVBO elems = do
@@ -100,14 +104,16 @@ gCubeVertexData = [
     -0.5, -0.5, -0.5,       0.0, 0.0, -1.0,
     -0.5, 0.5, -0.5,        0.0, 0.0, -1.0 ]
 
-getMatrices :: Double -> Double -> (M.Matrix Double, M.Matrix Double)
-getMatrices aspect rotation =
+getMatrices :: Double -> Double -> Double -> Double -> (M.Matrix Double, M.Matrix Double)
+getMatrices aspect rotation yaw pitch =
     (modelViewProjectionMatrix, normalMatrix)
     where
         modelViewProjectionMatrix = modelViewMatrix * projectionMatrix
         normalMatrix = M.transpose $ MH.inverse $ M.submatrix 1 3 1 3 modelViewMatrix
         projectionMatrix = MH.matrixPerspective (MH.radiansFromDegrees 65.0) aspect 0.1 100.0
-        modelViewMatrix = modelViewMatrixE * baseModelViewMatrix
+        modelViewMatrix = yawRotate * pitchRotate * modelViewMatrixE * baseModelViewMatrix
+        yawRotate = MH.matrixMakeRotation (MH.radiansFromDegrees pitch) 0.0 1.0 0.0
+        pitchRotate = MH.matrixMakeRotation (MH.radiansFromDegrees yaw) 0.0 0.0 1.0
         baseModelViewMatrix = MH.matrixRotate (MH.matrixTranslation 0.0 0.0 (-4.0)) rotation 0.0 1.0 0.0
         modelViewMatrixE = MH.matrixRotate (MH.matrixTranslation 0.0 0.0 1.5) rotation 1.0 1.0 1.0
 
@@ -141,8 +147,18 @@ uniformLocate uniformFn matrix Nothing string = do
     fail ("uniformLocate failed. Possibly program doesn't exist" )
 
 
-drawFrame :: IORef Double -> Double -> Double -> Double -> IO()
-drawFrame rotRef timeSinceLastUpdate width height = do
+drawFrame :: IORef Double
+          -> IORef Double
+          -> IORef Double
+          -> Double
+          -> Double
+          -> Double
+          -> Double
+          -> Double
+          -> Double
+          -> Double
+          -> IO()
+drawFrame rotRef deltaXRef deltaYRef timeSinceLastUpdate width height touchX touchY origTouchX origTouchY = do
     GL.clearColor $= Color4 0.65 0.65 0.65 1.0
     GL.clear [GL.ColorBuffer,GL.DepthBuffer]
 
@@ -153,10 +169,16 @@ drawFrame rotRef timeSinceLastUpdate width height = do
 
     -- Calc position, normal and their matrices
     let aspect = (width / height)
-    modifyIORef rotRef $ \x -> x + timeSinceLastUpdate * 0.5
+    modifyIORef rotRef $ \x -> x + (if touchX == 0 && touchY == 0 then timeSinceLastUpdate else 0) * 0.5
     rotation <- readIORef rotRef
 
-    let (modelViewProjectionMatrix, normalMatrix) = getMatrices aspect rotation
+    -- Touch
+    modifyIORef deltaXRef $ \x -> if touchX == 0 || (touchX - origTouchX) == 0 then x else touchX - origTouchX
+    modifyIORef deltaYRef $ \y -> if touchY == 0 || (touchY - origTouchY) == 0 then y else touchY - origTouchY
+    yaw <- readIORef deltaXRef
+    pitch <- readIORef deltaYRef
+
+    let (modelViewProjectionMatrix, normalMatrix) = getMatrices aspect rotation yaw pitch
 
     mprog <- (GL.get GL.currentProgram)
     uniformLocate glUniformMatrix4fv (glFloatVectorFromMatrix4 modelViewProjectionMatrix) mprog "modelViewProjectionMatrix"
@@ -192,9 +214,23 @@ loadShaders = do
 
     GL.currentProgram $= Just program
 
+touchesBegan :: Double -> Double -> IO ()
+touchesBegan x y = do
+    printf "touchesBegan %f %f\n" x y
+
+touchesMoved :: Double -> Double -> Double -> Double -> IO ()
+touchesMoved x y ox oy = do
+    printf "touchesMoved %f %f\n" (x - ox) (y - oy)
+
+touchesEnded :: Double -> Double -> Double -> Double -> IO ()
+touchesEnded x y ox oy = do
+    printf "touchesEnded %f %f\n" (x - ox) (y - oy)
+
 main = do
     putStrLn "Haskell start"
     rotRef <- newIORef 0.0
+    deltaXRef <- newIORef 0.0
+    deltaYRef <- newIORef 0.0
 
-    drawFrame <- mkDrawFrame $ drawFrame rotRef
+    drawFrame <- mkDrawFrame $ drawFrame rotRef deltaXRef deltaYRef
     c_main drawFrame
