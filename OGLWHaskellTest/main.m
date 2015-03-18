@@ -9,15 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "AppDelegate.h"
 
-//int main(int argc, char * argv[]) {
-//    @autoreleasepool {
-//        return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
-//    }
-//}
+void (*drawFrame)(double, double, double, double, double, double, double);
 
-void (*drawFrame)(double, double, double);
-
-void c_main(void (*_drawFrame)(double, double, double)) {
+void c_main(void (*_drawFrame)(double, double, double, double, double, double, double)) {
     NSLog(@"%@", [[NSBundle mainBundle] pathForResource:@"Shader" ofType:@"vsh"]);
     int argc_ = 1;
     char* argv_[2];

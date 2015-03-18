@@ -11,6 +11,8 @@
 #import "Main_stub.h"
 
 @interface GameViewController () {
+    float ox, oy;
+    float x, y;
 }
 @property (strong, nonatomic) EAGLContext *context;
 
@@ -82,6 +84,39 @@
     [EAGLContext setCurrentContext:self.context];
 }
 
+#pragma mark - Touches
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    CGPoint loc = [self getPositionFromTouch:[touches anyObject]];
+    ox = loc.x;
+    oy = loc.y;
+    x = loc.x;
+    y = loc.y;
+    touchesBegan(loc.x, loc.y);
+}
+
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    CGPoint loc = [self getPositionFromTouch:[touches anyObject]];
+    x = loc.x;
+    y = loc.y;
+    touchesMoved(loc.x, loc.y, ox, oy);
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    CGPoint loc = [self getPositionFromTouch:[touches anyObject]];
+    x = 0;
+    y = 0;
+    touchesEnded(loc.x, loc.y, ox, oy);
+}
+
+- (CGPoint)getPositionFromTouch:(UITouch *)touch
+{
+    return [touch locationInView:self.view];
+}
+
 #pragma mark - GLKView and GLKViewController delegate methods
 
 - (void)update
@@ -90,8 +125,8 @@
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
-    extern void (*drawFrame)(double, double, double);
-    drawFrame(self.timeSinceLastUpdate, self.view.bounds.size.width, self.view.bounds.size.height);
+    extern void (*drawFrame)(double, double, double, double, double, double, double);
+    drawFrame(self.timeSinceLastUpdate, self.view.bounds.size.width, self.view.bounds.size.height, x, y, ox, oy);
 }
 
 @end
